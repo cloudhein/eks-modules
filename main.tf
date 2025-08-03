@@ -19,4 +19,5 @@ module "eks" {
   eks_node_min_size     = var.eks_node_min_size
   eks_node_max_size     = var.eks_node_max_size
   eks_cluster_addons    = var.eks_cluster_addons
+  allowed_secret_arns   = var.allowed_secret_arns
 }

@@ -13,3 +13,14 @@ output "eks_node_group_name" {
   description = "EKS Node Group Name"
   value       = aws_eks_node_group.private_nodes.node_group_name
 }
+
+output "secret_store_service_account_name" {
+  description = "The name of the created service account"
+  value       = kubernetes_service_account.secret_store_irsa.metadata[0].name
+}
+
+output "secret_store_service_account_namespace" {
+  description = "The namespace of the service account"
+  value       = kubernetes_service_account.secret_store_irsa.metadata[0].namespace
+}
+

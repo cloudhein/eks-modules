@@ -41,3 +41,25 @@ variable "eks_cluster_addons" {
   type        = list(string)
   description = "EKS cluster add-ons to install"
 }
+
+variable "allowed_secret_arns" {
+  description = "List of SecretsManager secret ARNs that the IRSA role is allowed to read"
+  type        = list(string)
+}
+
+variable "secret_store_service_account_namespace" {
+  description = "Namespace where the Kubernetes Secret Store ServiceAccount lives"
+  type        = string
+  default     = "default"
+}
+
+variable "secret_store_service_account_name" {
+  description = "Name of the Kubernetes Secret Store ServiceAccount"
+  type        = string
+}
+
+variable "create_namespace" {
+  description = "Whether to create a Kubernetes namespace for secret store csi"
+  type        = bool
+  default     = false
+}
