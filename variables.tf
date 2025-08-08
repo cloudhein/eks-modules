@@ -40,19 +40,19 @@ variable "node_instance_types" {
 variable "eks_node_desired_size" {
   type        = number
   description = "Desired number of worker nodes"
-  default     = 3
+  default     = 1
 }
 
 variable "eks_node_min_size" {
   type        = number
   description = "Minimum number of worker nodes"
-  default     = 3
+  default     = 1
 }
 
 variable "eks_node_max_size" {
   type        = number
   description = "Maximum number of worker nodes"
-  default     = 5
+  default     = 3
 }
 
 variable "eks_cluster_addons" {
@@ -88,4 +88,51 @@ variable "create_namespace" {
   description = "Whether to create a Kubernetes namespace for secret store csi"
   type        = bool
   default     = false
+}
+
+#################
+
+variable "create_stateful_node_group" {
+  type        = bool
+  description = "Whether to create a stateful node group"
+  default     = true
+}
+
+variable "eks_node_desired_size_statefulset" {
+  type        = number
+  description = "Desired number of worker nodes for statefulset"
+  default     = 1
+}
+
+variable "eks_node_min_size_statefulset" {
+  type        = number
+  description = "Minimum number of worker nodes for statefulset"
+  default     = 1
+}
+
+variable "eks_node_max_size_statefulset" {
+  type        = number
+  description = "Maximum number of worker nodes for statefulset"
+  default     = 2
+}
+
+variable "node_instance_types_statefulset" {
+  type        = list(string)
+  description = "List of EC2 instance types for the EKS node group for statefulset"
+  default     = ["t3.medium"]
+}
+
+###############################################
+# EKS Cluster Autoscaler Variables
+###############################################
+variable "cluster_autoscaler_chart_version" {
+  type        = string
+  description = "Version of the Cluster Autoscaler Helm chart to deploy"
+  default     = "9.49.0"
+}
+
+variable "region" {
+  type        = string
+  description = "AWS region"
+  default     = "ap-southeast-1"
 }

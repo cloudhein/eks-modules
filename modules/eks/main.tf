@@ -103,6 +103,63 @@ resource "aws_eks_node_group" "private_nodes" {
     min_size     = var.eks_node_min_size
   }
 
+  tags = merge(
+    var.common_tags,
+    {
+      "k8s.io/cluster-autoscaler/${var.cluster_name}" = "owned",
+      "k8s.io/cluster-autoscaler/enabled"             = "true",
+      "kubernetes.io/cluster/${var.cluster_name}"     = "owned"
+    }
+  )
+
+  depends_on = [
+    aws_eks_cluster.eks,
+    aws_iam_role_policy_attachment.eks_node_AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.eks_node_AmazonEC2ContainerRegistryReadOnly,
+    aws_iam_role_policy_attachment.eks_node_AmazonEKS_CNI_Policy
+  ]
+}
+
+#################################################
+
+resource "aws_eks_node_group" "stateful_nodes" {
+  count           = var.create_stateful_node_group ? 1 : 0
+  cluster_name    = aws_eks_cluster.eks.name
+  node_group_name = "${var.cluster_name}-stateful-node-group"
+  node_role_arn   = aws_iam_role.eks_node_role.arn
+
+  # ONLY this one subnet → ensures all pods in this NG stay in the same AZ
+  subnet_ids = [var.private_subnet_az1]
+
+  instance_types = var.node_instance_types_statefulset
+
+  scaling_config {
+    desired_size = var.eks_node_desired_size_statefulset
+    max_size     = var.eks_node_max_size_statefulset
+    min_size     = var.eks_node_min_size_statefulset
+  }
+
+
+  # label & taint these nodes so only your stateful workloads land here
+  labels = {
+    "role" = "stateful"
+  }
+
+  taint {
+    key    = "stateful"
+    value  = "true"
+    effect = "NO_SCHEDULE"
+  }
+
+  tags = merge(
+    var.common_tags,
+    {
+      "k8s.io/cluster-autoscaler/${var.cluster_name}" = "owned",
+      "k8s.io/cluster-autoscaler/enabled"             = "true",
+      "kubernetes.io/cluster/${var.cluster_name}"     = "owned"
+    }
+  )
+
   depends_on = [
     aws_eks_cluster.eks,
     aws_iam_role_policy_attachment.eks_node_AmazonEKSWorkerNodePolicy,

@@ -24,3 +24,16 @@ output "secret_store_service_account_namespace" {
   value       = kubernetes_service_account.secret_store_irsa.metadata[0].namespace
 }
 
+// outputs.tf
+
+output "stateful_node_group_labels" {
+  description = "The labels applied to the stateful node group"
+  value       = try(aws_eks_node_group.stateful_nodes[0].labels, {})
+}
+
+output "stateful_node_group_taints" {
+  description = "The taints applied to the stateful node group"
+  value       = try(aws_eks_node_group.stateful_nodes[0].taint, [])
+}
+
+
