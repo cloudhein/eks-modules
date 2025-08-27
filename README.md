@@ -1,44 +1,162 @@
 # EKS Infrastructure Provisioning with Terraform
 
-This repository provides complete Terraform configurations for provisioning the foundational infrastructure of an Amazon EKS (Elastic Kubernetes Service) platform. The setup supports both stateless and stateful microservices, and includes the setup required for ingress controllers, persistent volumes via EBS CSI driver, and high availability networking.
+This repository provides a comprehensive, production-ready Terraform configuration for provisioning Amazon EKS (Elastic Kubernetes Service) infrastructure. The setup supports both stateless and stateful microservices with enterprise-grade features including secrets management, auto-scaling, ingress controllers, and persistent storage.
 
 ---
 
-## 🚀 Features
+## 🚀 Key Features
 
-- Modularized Terraform code
-- VPC with public and private subnets across availability zones
-- EKS cluster provisioning with managed node groups
-- IAM roles and OpenID Connect (OIDC) provider setup
-- EBS CSI driver IAM policy and integration for stateful workloads
-- S3 backend configuration for remote state management
-- Preconfigured support for ingress setup (e.g., AWS Load Balancer Controller)
+### Core Infrastructure
+- **Modularized Terraform architecture** for maintainability and reusability
+- **Multi-AZ VPC** with public and private subnets for high availability
+- **EKS cluster** with managed node groups and advanced configurations
+- **Remote state management** with S3 backend and DynamoDB locking
+
+### Security & IAM
+- **IAM Roles for Service Accounts (IRSA)** with OpenID Connect (OIDC) provider
+- **AWS Secrets Manager integration** with fine-grained access control
+- **Least privilege IAM policies** for all service accounts
+- **Secure service account automation** with Kubernetes provider integration
+
+### Storage & Persistence
+- **EBS CSI driver** for dynamic persistent volume provisioning
+- **Stateful node groups** with dedicated taints and labels
+- **StorageClass configurations** for different workload requirements
+
+### Networking & Ingress
+- **AWS Load Balancer Controller** preconfigured with IRSA
+- **Application Load Balancer (ALB)** support for ingress
+- **Network Load Balancer (NLB)** capabilities
+- **VPC CNI**, CoreDNS, and kube-proxy optimizations
+
+### Auto-scaling & Monitoring
+- **Cluster Autoscaler** for automatic eks nodes scale out and scale in support
+- **Node group scaling policies** with customizable parameters
+- **Comprehensive logging and monitoring** setup
+
+### Secrets Management
+- **AWS Secrets Store CSI Driver** pre-installed and configured
+- **Kubernetes service accounts** with AWS Secrets Manager access
+- **Secure secrets injection** into pods without hardcoded credentials
 
 ---
 
-## 🧱 Modules Overview
+## 🧱 Architecture Overview
+
+### Overview Architecure of EKS Infrastructure
+
+![Infrasture Diagram](./images/network-architecture.png)
+
+### LLD Architecure of EKS Infrastructure
+
+![Infrasture Diagram](./images/eks-architecture.png)
+
+### EKS IRSA Permissions & Relationship
+
+![EKS IRSA Diagram](./images/IRSA-1.png)
+
+![EKS IRSA Diagram](./images/IRSA-2.png)
+
+### EKS IRSA & OIDC Provider Relationship Workflow
+
+![EKS IRSA Diagram](./images/OIDC-provider.png)
+
+## 📦 Modules Overview
 
 ### 🔹 VPC Module
 
-Creates a robust and secure VPC, including:
+Creates a secure, scalable VPC foundation:
 
-- Public and private subnets in multiple Availability Zones (AZs)
-- Internet Gateway for public traffic
-- NAT Gateway for outbound traffic from private subnets
-- Route tables and subnet associations
+- **Multi-AZ deployment** across 3 availability zones
+- **Public subnets** for load balancers and NAT gateways
+- **Private subnets** for EKS nodes and sensitive workloads
+- **Internet Gateway** for public internet access
+- **NAT Gateway** with Elastic IP for outbound private traffic
+- **Route tables** with proper associations and routing rules
 
 ### 🔹 EKS Module
 
-Handles provisioning of the Amazon EKS cluster and necessary components:
+Comprehensive EKS cluster setup with enterprise features:
 
-- EKS Control Plane provisioning with cluster endpoint and OIDC configuration
-- Managed Node Groups deployed in private subnets for enhanced security
-- IAM roles for EKS cluster and worker nodes
-- OpenID Connect (OIDC) provider setup for Kubernetes service account IAM integration
-- **Supports Stateful Applications** with persistent volume integration
-- **EBS CSI Driver Setup** for dynamic volume provisioning
-- **Ingress Controller Preconfiguration**, ready for deployment of the AWS Load Balancer Controller
-- Addons like vpc-cni, kube-proxy, and coredns configured for enhanced networking and observability
+#### Core Cluster Configuration
+- **EKS Control Plane** with public/private endpoint access
+- **OIDC Identity Provider** for service account federation
+- **Cluster encryption** for secrets at rest
+- **CloudWatch logging** for audit, API, authenticator, controllerManager, and scheduler
+
+#### Node Groups
+- **General-purpose node group** for stateless workloads
+- **Stateful node group** with dedicated taints and labels for persistent workloads
+- **Auto-scaling configuration** with min/max/desired capacity
+- **Spot instance support** for cost optimization (optional)
+
+#### Add-ons and Extensions
+- **VPC CNI** for advanced networking
+- **CoreDNS** for cluster DNS resolution
+- **kube-proxy** for service networking
+- **EBS CSI Driver** for persistent volume management
+
+#### Security Integration
+- **AWS Secrets Manager** integration with IRSA
+- **Fine-grained IAM policies** for service accounts
+- **Pod Security Standards** enforcement
+- **Network policies** support
+
+---
+
+## 🔧 Advanced Features
+
+### 🔐 Secrets Management
+
+**AWS Secrets Store CSI Driver Integration:**
+```hcl
+# Automatic service account creation with IRSA
+resource "kubernetes_service_account" "secret_store_irsa" {
+  metadata {
+    name      = var.secret_store_service_account_name
+    namespace = var.secret_store_service_account_namespace
+    annotations = {
+      "eks.amazonaws.com/role-arn" = aws_iam_role.secrets_irsa_role.arn
+    }
+  }
+}
+```
+
+**Features:**
+- **Fine-grained access control** to specific secrets by ARN
+- **Automatic namespace creation** if needed
+- **Read-only permissions** with least privilege principle
+- **Service account automation** with proper OIDC federation
+
+### ⚡ Auto-scaling
+
+**Cluster Autoscaler with EKS node group auto-scaling support:**
+```hcl
+# Pre-installed and configured cluster autoscaler
+resource "helm_release" "cluster_autoscaler" {
+  name       = "cluster-autoscaler"
+  repository = "https://kubernetes.github.io/autoscaler"
+  chart      = "cluster-autoscaler"
+  namespace  = "kube-system"
+}
+```
+
+### 🗄️ Stateful Workloads Support
+
+**Dedicated Stateful Node Group:**
+- **Specialized taints and labels** for database workloads
+- **EBS-optimized instances** with enhanced networking
+- **Persistent volume support** with EBS CSI driver
+- **Anti-affinity rules** for high availability
+- **Custom storage classes** for different performance tiers
+
+### 🌐 Ingress and Load Balancing
+
+**AWS Load Balancer Controller:**
+- **Application Load Balancer (ALB)** support
+- **SSL/TLS termination** with ACM integration
+- **WAF integration** for security (optional)
+- **Target group binding** for advanced routing
 
 ---
 
@@ -46,24 +164,39 @@ Handles provisioning of the Amazon EKS cluster and necessary components:
 
 ### 📌 Prerequisites
 
-- Terraform must be installed.
-- AWS CLI configured with appropriate IAM credentials
-- `kubectl` installed and configured
-- AWS account with necessary permissions to create VPC, EKS, IAM, etc.
+- **Terraform** >= 1.9.0 (required for native S3 state locking)
+- **AWS CLI** configured with appropriate credentials
+- **kubectl** >= 1.21
+- **helm** >= 3.0 (for add-on installations)
+- **AWS account** with EKS, VPC, IAM, and EC2 permissions
 
-### 📦 Installation & Deployment
+### 🚀 Deployment Steps
 
-Clone the repository and run the following commands:
-
+1. **Initialize Terraform:**
 ```bash
-# Initialize the Terraform working directory
 terraform init
+```
 
-# Review the planned infrastructure changes
+2. **Review the plan:**
+```bash
 terraform plan
+```
 
-# Apply the changes to provision infrastructure
+3. **Apply the configuration:**
+```bash
 terraform apply
+```
+
+4. **Configure kubectl:**
+```bash
+aws eks --region ap-southeast-1 update-kubeconfig --name my-eks-cluster
+```
+
+5. **Verify the setup:**
+```bash
+kubectl get nodes
+kubectl get pods -A
+helm list -A
 ```
 
 ---
@@ -71,51 +204,53 @@ terraform apply
 ## 📂 Directory Structure
 
 ```
-├── backend
-│   ├── backend-access-user.tf
-│   ├── main.tf
-│   ├── outputs.tf
-│   ├── terraform.tfstate
-│   ├── terraform.tfvars
-│   ├── variables.tf
-│   └── versions.tf
-├── backend.tf
-├── main.tf
-├── modules
-│   ├── eks
-│   │   ├── ebs-csi-policy.tf
-│   │   ├── eks_cluster_addons.tf
-│   │   ├── ingress-policy.tf
-│   │   ├── ingress-service-account.tf
-│   │   ├── main.tf
-│   │   ├── outputs.tf
-│   │   └── variables.tf
-│   └── vpc
-│       ├── data.tf
-│       ├── main.tf
-│       ├── outputs.tf
-│       └── variables.tf
-├── README.md
-├── variables.tf
-└── versions.tf
+├── backend/                          # Remote state configuration
+│   ├── backend-access-user.tf       # IAM user for backend access
+│   ├── main.tf                      # S3 bucket and DynamoDB table
+│   └── ...
+├── modules/
+│   ├── eks/                                    # EKS module
+│   │   ├── main.tf                             # EKS cluster and node groups
+│   │   ├── ebs-csi-policy.tf                  # EBS CSI driver IAM policies
+│   │   ├── eks_cluster_addons.tf              # EKS add-ons configuration
+│   │   ├── cluster-autoscaler.tf              # Cluster autoscaler IRSA setup
+│   │   ├── helm-cluster-autoscaler.tf         # Helm deployment for autoscaler
+│   │   ├── ingress-policy.tf                  # Load balancer controller policies
+│   │   ├── ingress-service-account.tf         # Service accounts for ingress
+│   │   ├── secret-store-csi-policy.tf         # Secrets Store CSI driver policies
+│   │   ├── secret-store-csi-service-accounts.tf # Service accounts for secrets
+│   │   ├── outputs.tf                         # Module outputs
+│   │   └── variables.tf                       # Module variables
+│   └── vpc/                         # VPC module
+│       ├── main.tf                  # VPC, subnets, gateways
+│       ├── data.tf                  # Data sources (AZs, etc.)
+│       ├── outputs.tf               # VPC outputs
+│       └── variables.tf             # VPC variables
+├── main.tf                          # Root module configuration
+├── variables.tf                     # Root variables
+├── outputs.tf                       # Root outputs
+├── backend.tf                       # Backend configuration
+└── versions.tf                      # Provider versions
 ```
 
 ---
 
-## 📤 Outputs
+## 📤 Comprehensive Outputs
 
-After a successful `terraform apply`, you’ll get output values like:
+### EKS Cluster Information
+- `eks_cluster_name`: EKS cluster identifier
+- `eks_cluster_endpoint`: Kubernetes API server endpoint
 
-### EKS Module Outputs
+### Node Groups
+- `eks_node_group_name`: General-purpose node group name
+- `stateful_node_group_labels`: Labels applied to stateful nodes
+- `stateful_node_group_taints`: Taints for stateful workload isolation
 
-- eks_cluster_name: The name of the provisioned EKS cluster.
+### Service Accounts
+- `secret_store_service_account_name`: Secrets management service account
+- `secret_store_service_account_namespace`: Service account namespace
 
-- eks_cluster_endpoint: The API server endpoint URL for the EKS cluster.
-
-- eks_node_group_name: The name of the managed node group created for worker nodes.
-
-### VPC Module Outputs
-
+### VPC Networking
 - vpc_id: The ID of the created Virtual Private Cloud (VPC).
 
 - vpc_cidr_block: The CIDR block range assigned to the VPC.
@@ -138,71 +273,125 @@ After a successful `terraform apply`, you’ll get output values like:
 
 ---
 
-## 🛡 Remote State Configuration
+## 🛡️ Security Best Practices
 
-Remote state is managed via S3 bucket and state file locking supported:
-```hcl
-terraform {
-  backend "s3" {
-    bucket       = "remote-state-bucket-dev-007"
-    key          = "terraform/dev/terraform.tfstate"
-    region       = "ap-southeast-1"
-    encrypt      = true
-    use_lockfile = true
-    profile      = "tf-s3-state-handler"
-  }
-}
+### IAM and RBAC
+- **Least privilege IAM policies** for all service accounts
+- **OIDC federation** instead of long-lived credentials
+- **Pod Security Standards** enforcement
+- **RBAC policies** for fine-grained access control
+
+### Network Security
+- **Private node groups** with no direct internet access
+- **Security groups** with minimal required ports
+- **VPC Flow Logs** for network monitoring
+
+### Secrets Management
+- **AWS Secrets Manager** integration
+- **Secrets Store CSI driver** for secure injection
+- **No hardcoded secrets** in configurations
+- **Automatic secret rotation** support
+
+---
+
+## 🔄 Post-Deployment Configuration
+
+### Installing Additional Add-ons
+
+**AWS Load Balancer Controller:**
+```bash
+helm repo add eks https://aws.github.io/eks-charts
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set clusterName=my-eks-cluster \
+  --set serviceAccount.create=false \
+  --set serviceAccount.name=aws-load-balancer-controller
+```
+
+**Metrics Server:**
+```bash
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+```
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**Node Group Creation Fails:**
+```bash
+# Check IAM permissions
+aws sts get-caller-identity
+aws iam get-role --role-name EKS-NodeGroup-Role
+```
+
+**IRSA Not Working:**
+```bash
+# Verify OIDC provider
+kubectl get configmap aws-auth -n kube-system -o yaml
+aws iam list-open-id-connect-providers
+```
+
+**Auto-scaling Issues:**
+```bash
+# Check cluster autoscaler logs
+kubectl logs -n kube-system deployment/cluster-autoscaler
+kubectl describe nodes
+```
+
+### Useful Commands
+
+```bash
+# Get cluster info
+kubectl cluster-info
+kubectl get nodes -o wide
+
+# Check add-ons
+kubectl get daemonsets -A
+kubectl get deployments -A
+
+# Monitor auto-scaling
+kubectl top nodes
+kubectl get hpa -A
+
+# Verify secrets integration
+kubectl get secretproviderclasses -A
+kubectl describe pod <pod-name>
 ```
 
 ---
 
-## 📌 Notes
+## 🤝 Contributing
 
-- Ensure your AWS profile has proper credentials and MFA if applicable.
-- Use `kubectl get nodes` to validate your EKS worker nodes after provisioning.
-- You can deploy the AWS Load Balancer Controller and other components post-provisioning.
+We welcome contributions! Please read our contributing guidelines and submit pull requests for any improvements.
 
----
-
-# Key Configurations
-
-## EKS Cluster
-- Uses the *modules/eks* to create an EKS cluster with public endpoint access.
-- Configures managed node groups with customizable instance types and scaling parameters.
-
-## VPC
-
-- Sets up public and private subnets across multiple Availability Zones and Fault-Tolerance Architecture.
-
-- Configures routing with NAT Gateway for private subnet outbound access.
-
-## Stateful Microservices
-- Enables the AWS EBS CSI driver with an IAM role for persistent volume support.
-- Configured with the *aws-ebs-csi-driver addon*.
-
-## Ingress Policies
-- Sets up the AWS Load Balancer Controller with an IAM role and Kubernetes service account for managing ALBs.
-- Uses IRSA for secure AWS API access, eliminating the need for manual *eksctl* commands like *eksctl utils associate-iam-oidc-provider*.
-- Pre-configured an ingress policies ans service accounts to expose the microservices via an *ingress ALB*.
-
-## IAM and OIDC
-- Automatically creates an IAM OIDC provider for the EKS cluster.
-- Configures trust policies for service accounts (e.g., *aws-load-balancer-controller*, *ebs-csi-controller-sa*).
-
-## 🤝 Contributions
-
-Open issues and PRs are welcome! This project is built for learning and collaboration.
+### Development Setup
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test with `terraform plan`
+5. Submit a pull request
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
 ## 🙏 Acknowledgments
 
-- [AWS EKS Documentation](https://docs.aws.amazon.com/eks/)
-- [Terraform AWS Modules](https://github.com/terraform-aws-modules)
+- [AWS EKS Best Practices Guide](https://aws.github.io/aws-eks-best-practices/)
+- [Terraform AWS Provider Documentation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
+- [Kubernetes Documentation](https://kubernetes.io/docs/)
+- [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/)
+- [Cluster Autoscaler Documentation](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler)
 
+---
+
+## 📞 Support
+
+For questions and support:
+- Create an issue in this repository
+- Check the [AWS EKS Troubleshooting Guide](https://docs.aws.amazon.com/eks/latest/userguide/troubleshooting.html)
+- Review Terraform AWS Provider issues
