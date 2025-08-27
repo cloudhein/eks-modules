@@ -49,7 +49,7 @@ This repository provides a comprehensive, production-ready Terraform configurati
 
 ### LLD Architecure of EKS Infrastructure
 
-![Infrasture Diagram](./images/eks-architecture.png)
+![Infrasture Diagram](./images/eks-architecture-diagram.png)
 
 ### EKS IRSA Permissions & Relationship
 
