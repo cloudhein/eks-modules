@@ -9,7 +9,9 @@ resource "kubernetes_service_account" "secret_store_irsa" {
   }
 
   depends_on = [
-    kubernetes_namespace.optional_ns
+    kubernetes_namespace.optional_ns,
+    aws_eks_access_policy_association.terraform_admin,
+    aws_eks_node_group.private_nodes
   ]
 
 }

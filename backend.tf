@@ -5,6 +5,6 @@ terraform {
     region       = "ap-southeast-1"
     encrypt      = true
     use_lockfile = true
-    profile      = "tf-s3-state-handler"
+    profile      = "admin-cli"
   }
 }

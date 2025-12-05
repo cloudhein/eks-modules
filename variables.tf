@@ -1,3 +1,17 @@
+####### profile to authenticate to aws #######
+
+variable "aws_auth_profile" {
+  type        = string
+  description = "AWS profile to use for authentication"
+  default     = "admin-cli"
+}
+
+variable "aws_auth_region" {
+  type        = string
+  description = "AWS region to use for authentication"
+  default     = "ap-southeast-1"
+}
+
 ####### VPC variables #########
 
 variable "cluster_name" {
@@ -34,7 +48,13 @@ variable "kubernetes_version" {
 variable "node_instance_types" {
   type        = list(string)
   description = "List of EC2 instance types for the EKS node group"
-  default     = ["t3.medium"]
+  default     = ["c7i-flex.large"]
+}
+
+variable "authentication_mode" {
+  type        = string
+  description = "Authentication mode for EKS cluster access"
+  default     = "API_AND_CONFIG_MAP"
 }
 
 variable "eks_node_desired_size" {
@@ -66,12 +86,6 @@ variable "eks_cluster_addons" {
   ]
 }
 
-variable "allowed_secret_arns" {
-  description = "List of SecretsManager secret ARNs that the IRSA role is allowed to read"
-  type        = list(string)
-  default     = ["arn:aws:secretsmanager:ap-southeast-1:730335247947:secret:mongodb-credentials-7weMkl"]
-}
-
 variable "secret_store_service_account_namespace" {
   description = "Namespace where the Kubernetes Secret Store ServiceAccount lives"
   type        = string
@@ -90,7 +104,7 @@ variable "create_namespace" {
   default     = false
 }
 
-#################
+################# stateful node group variables #################
 
 variable "create_stateful_node_group" {
   type        = bool
@@ -119,7 +133,7 @@ variable "eks_node_max_size_statefulset" {
 variable "node_instance_types_statefulset" {
   type        = list(string)
   description = "List of EC2 instance types for the EKS node group for statefulset"
-  default     = ["t3.medium"]
+  default     = ["c7i-flex.large"]
 }
 
 ###############################################
@@ -136,3 +150,14 @@ variable "region" {
   description = "AWS region"
   default     = "ap-southeast-1"
 }
+
+###############################################
+# Secrets Manager allowed patterns
+###############################################
+variable "allowed_secret_patterns" {
+  description = "List of secret name patterns to allow access"
+  type        = list(string)
+  default = [
+    "mongodb-credentials-*"
+  ]
+}  

@@ -37,3 +37,15 @@ output "stateful_node_group_taints" {
 }
 
 
+##################################################
+# EKS Cluster Authentication Outputs
+##################################################
+output "cluster_endpoint" {
+  description = "Endpoint for EKS control plane"
+  value       = aws_eks_cluster.eks.endpoint
+}
+
+output "cluster_ca_certificate" {
+  description = "Base64 encoded certificate data required to communicate with the cluster"
+  value       = aws_eks_cluster.eks.certificate_authority[0].data
+}

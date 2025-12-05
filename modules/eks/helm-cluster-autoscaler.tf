@@ -32,14 +32,16 @@ resource "helm_release" "cluster_autoscaler" {
 
   depends_on = [
     kubernetes_service_account.cluster_autoscaler,
-    aws_iam_role_policy_attachment.attach_ca_policy
+    aws_iam_role_policy_attachment.attach_ca_policy,
+    aws_eks_access_policy_association.terraform_admin,
+    aws_eks_node_group.private_nodes
   ]
 }
 
-provider "helm" {
-  kubernetes = {
-    host                   = data.aws_eks_cluster.cluster.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
-    token                  = data.aws_eks_cluster_auth.cluster.token
-  }
-}
+#provider "helm" {
+#  kubernetes = {
+#    host                   = data.aws_eks_cluster.cluster.endpoint
+#    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
+#    token                  = data.aws_eks_cluster_auth.cluster.token
+#  }
+#}

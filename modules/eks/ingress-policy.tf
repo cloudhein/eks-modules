@@ -11,9 +11,6 @@ resource "aws_iam_policy" "aws_load_balancer_controller" {
   policy = data.http.iam_policy.response_body
 }
 
-# Get the current AWS account ID (if you need it elsewhere)
-data "aws_caller_identity" "current" {}
-
 ##############################
 # Trust relationship policy for ALB Controller
 ##############################

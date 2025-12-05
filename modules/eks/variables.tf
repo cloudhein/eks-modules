@@ -12,6 +12,11 @@ variable "kubernetes_version" {
   description = "Version of Kubernetes to use for the EKS cluster"
 }
 
+variable "authentication_mode" {
+  type        = string
+  description = "Authentication mode for EKS cluster access"
+}
+
 variable "private_subnet_ids" {
   type        = list(string)
   description = "List of private subnet IDs for EKS cluster and node group"
@@ -42,10 +47,10 @@ variable "eks_cluster_addons" {
   description = "EKS cluster add-ons to install"
 }
 
-variable "allowed_secret_arns" {
-  description = "List of SecretsManager secret ARNs that the IRSA role is allowed to read"
-  type        = list(string)
-}
+#variable "allowed_secret_arns" {
+#  description = "List of SecretsManager secret ARNs that the IRSA role is allowed to read"
+#  type        = list(string)
+#}
 
 variable "secret_store_service_account_namespace" {
   description = "Namespace where the Kubernetes Secret Store ServiceAccount lives"
@@ -125,4 +130,13 @@ variable "common_tags" {
   description = "Common tags to attach to resources created by this module."
   type        = map(string)
   default     = {}
+}
+
+
+##################################################
+# Secrets Manager Allowed Secret Name (Secret Key)
+##################################################
+variable "allowed_secret_patterns" {
+  description = "List of secret name patterns to allow access"
+  type        = list(string)
 }

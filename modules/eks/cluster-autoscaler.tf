@@ -82,4 +82,9 @@ resource "kubernetes_service_account" "cluster_autoscaler" {
       "app.kubernetes.io/name" = "cluster-autoscaler"
     }
   }
+
+  depends_on = [
+    aws_eks_access_policy_association.terraform_admin,
+    aws_eks_node_group.private_nodes
+  ]
 }

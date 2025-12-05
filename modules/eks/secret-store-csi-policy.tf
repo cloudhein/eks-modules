@@ -1,4 +1,20 @@
 ####################################
+# Add this code to detect aws account id and current region #
+####################################
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+
+####################################
+# Add this code to get aws secret manager arn & ${pattern} value is obtained from variables file
+####################################
+locals {
+  secret_arns = [
+    for pattern in var.allowed_secret_patterns :
+    "arn:aws:secretsmanager:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:secret:${pattern}"
+  ]
+}
+
+####################################
 # 1. IAM policy document: SecretsManager read-only
 ####################################
 data "aws_iam_policy_document" "secretsmanager" {
@@ -12,7 +28,7 @@ data "aws_iam_policy_document" "secretsmanager" {
     ]
 
     # tightened to exactly the ARNs the user provides
-    resources = var.allowed_secret_arns
+    resources = local.secret_arns
   }
 }
 
