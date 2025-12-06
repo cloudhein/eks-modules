@@ -160,4 +160,19 @@ variable "allowed_secret_patterns" {
   default = [
     "mongodb-credentials-*"
   ]
-}  
+}
+
+##################################################
+# Node group variables
+##################################################
+variable "node_volume_size" {
+  description = "Size of the EKS worker node root volume in GB"
+  type        = number
+  default     = 80
+}
+
+variable "stateful_node_volume_size" {
+  description = "Size of the EKS stateful worker node root volume in GB"
+  type        = number
+  default     = 100
+}
