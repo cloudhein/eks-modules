@@ -15,7 +15,8 @@ resource "aws_eks_cluster" "eks" {
     subnet_ids             = var.private_subnet_ids
     endpoint_public_access = true
 
-    cluster_security_group_id = aws_security_group.cluster.id
+    # EKS will create cluster security group automatically
+    #cluster_security_group_id = aws_security_group.cluster.id
 
     security_group_ids = [aws_security_group.control_plane.id]
   }

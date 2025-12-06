@@ -30,8 +30,7 @@ resource "aws_launch_template" "private_nodes" {
   network_interfaces {
     associate_public_ip_address = false
     delete_on_termination       = true
-
-    security_groups = [aws_security_group.cluster.id]
+    # No need to define security group,eks cluster sg will automatically associated to managed node group
   }
 
   # Tag Specifications
@@ -111,8 +110,7 @@ resource "aws_launch_template" "stateful_nodes" {
   network_interfaces {
     associate_public_ip_address = false
     delete_on_termination       = true
-
-    security_groups = [aws_security_group.cluster.id]
+    # No need to define security group,eks cluster sg will automatically associated to managed node group
   }
 
   # Tag Specifications

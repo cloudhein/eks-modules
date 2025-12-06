@@ -28,70 +28,19 @@ resource "aws_vpc_security_group_egress_rule" "control_plane_egress_all" {
 }
 
 # ========================================
-# Cluster Security Group
+# Cluster Security Group (EKS managed security group add additional inbound rules)
 # ========================================
-resource "aws_security_group" "cluster" {
-  name        = "${var.cluster_name}-cluster-sg"
-  description = "Security group for EKS cluster communication"
-  vpc_id      = var.vpc_id
 
-  tags = merge(
-    {
-      Name = "${var.cluster_name}-cluster-sg"
-      Type = "cluster"
-    }
-  )
-}
-
-# Cluster SG - Inbound: Allow all from itself
-resource "aws_vpc_security_group_ingress_rule" "cluster_ingress_self" {
-  security_group_id = aws_security_group.cluster.id
-  description       = "Allow all traffic from cluster security group to itself"
-  
-  ip_protocol                  = "-1"
-  referenced_security_group_id = aws_security_group.cluster.id
-
-  tags = {
-    Name = "cluster-ingress-self"
-  }
-}
-
-# Cluster SG - Inbound: Allow all from node shared security group
+# Cluster SG - Inbound: Allow all traffic from node shared security group
 resource "aws_vpc_security_group_ingress_rule" "cluster_ingress_from_nodes" {
-  security_group_id = aws_security_group.cluster.id
-  description       = "Allow all traffic from node shared security group"
+  security_group_id = aws_eks_cluster.eks.vpc_config[0].cluster_security_group_id
+  description       = "Allow all traffic between unmanged node group(node_shared_sg) & managed node group(cluster_sg)"
   
   ip_protocol                  = "-1"
   referenced_security_group_id = aws_security_group.node_shared.id
 
   tags = {
     Name = "cluster-ingress-from-nodes"
-  }
-}
-
-# Cluster SG - Outbound: Allow all to itself
-resource "aws_vpc_security_group_egress_rule" "cluster_egress_self" {
-  security_group_id = aws_security_group.cluster.id
-  description       = "Allow all traffic to cluster security group itself"
-  
-  ip_protocol                  = "-1"
-  referenced_security_group_id = aws_security_group.cluster.id
-
-  tags = {
-    Name = "cluster-egress-self"
-  }
-}
-
-# Cluster SG - Outbound: Allow all IPv4
-resource "aws_vpc_security_group_egress_rule" "cluster_egress_all" {
-  security_group_id = aws_security_group.cluster.id
-  description       = "Allow all outbound IPv4 traffic"
-  
-  ip_protocol = "-1"
-  cidr_ipv4   = "0.0.0.0/0"
-
-  tags = {
-    Name = "cluster-egress-all-ipv4"
   }
 }
 
@@ -124,13 +73,13 @@ resource "aws_vpc_security_group_ingress_rule" "node_ingress_self" {
   }
 }
 
-# Node Shared SG - Inbound: Allow all from cluster security group
+# Node Shared SG - Inbound: Allow all traffic from cluster security group(eks manages cluster sg)
 resource "aws_vpc_security_group_ingress_rule" "node_ingress_from_cluster" {
   security_group_id = aws_security_group.node_shared.id
-  description       = "Allow traffic from cluster security group"
+  description       = "Allow all traffic from cluster security group"
   
   ip_protocol                  = "-1"
-  referenced_security_group_id = aws_security_group.cluster.id
+  referenced_security_group_id = aws_eks_cluster.eks.vpc_config[0].cluster_security_group_id
 
   tags = {
     Name = "node-ingress-from-cluster"
