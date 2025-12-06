@@ -155,3 +155,11 @@ variable "stateful_node_volume_size" {
   type        = number
   default     = 100
 }
+
+##################################################
+# Security Group Variables
+##################################################
+variable "vpc_id" {
+  description = "VPC ID where the EKS cluster and nodes will be deployed"
+  type        = string
+}
