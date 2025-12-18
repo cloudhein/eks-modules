@@ -8,8 +8,9 @@ resource "aws_security_group" "control_plane" {
 
   tags = merge(
     {
-      Name = "${var.cluster_name}-control-plane-sg"
-      Type = "control-plane"
+      Name                     = "${var.cluster_name}-control-plane-sg"
+      Type                     = "control-plane"
+      "karpenter.sh/discovery" = var.cluster_name # for karpenter sg tagging 
     }
   )
 }
@@ -18,7 +19,7 @@ resource "aws_security_group" "control_plane" {
 resource "aws_vpc_security_group_egress_rule" "control_plane_egress_all" {
   security_group_id = aws_security_group.control_plane.id
   description       = "Allow all outbound traffic"
-  
+
   ip_protocol = "-1"
   cidr_ipv4   = "0.0.0.0/0"
 
@@ -35,7 +36,7 @@ resource "aws_vpc_security_group_egress_rule" "control_plane_egress_all" {
 resource "aws_vpc_security_group_ingress_rule" "cluster_ingress_from_nodes" {
   security_group_id = aws_eks_cluster.eks.vpc_config[0].cluster_security_group_id
   description       = "Allow all traffic between unmanged node group(node_shared_sg) & managed node group(cluster_sg)"
-  
+
   ip_protocol                  = "-1"
   referenced_security_group_id = aws_security_group.node_shared.id
 
@@ -54,8 +55,9 @@ resource "aws_security_group" "node_shared" {
 
   tags = merge(
     {
-      Name = "${var.cluster_name}-node-shared-sg"
-      Type = "node-shared"
+      Name                     = "${var.cluster_name}-node-shared-sg"
+      Type                     = "node-shared"
+      "karpenter.sh/discovery" = var.cluster_name # for karpenter sg tagging
     }
   )
 }
@@ -64,7 +66,7 @@ resource "aws_security_group" "node_shared" {
 resource "aws_vpc_security_group_ingress_rule" "node_ingress_self" {
   security_group_id = aws_security_group.node_shared.id
   description       = "Allow nodes to communicate with each other"
-  
+
   ip_protocol                  = "-1"
   referenced_security_group_id = aws_security_group.node_shared.id
 
@@ -77,7 +79,7 @@ resource "aws_vpc_security_group_ingress_rule" "node_ingress_self" {
 resource "aws_vpc_security_group_ingress_rule" "node_ingress_from_cluster" {
   security_group_id = aws_security_group.node_shared.id
   description       = "Allow all traffic from cluster security group"
-  
+
   ip_protocol                  = "-1"
   referenced_security_group_id = aws_eks_cluster.eks.vpc_config[0].cluster_security_group_id
 
@@ -90,7 +92,7 @@ resource "aws_vpc_security_group_ingress_rule" "node_ingress_from_cluster" {
 resource "aws_vpc_security_group_egress_rule" "node_egress_all" {
   security_group_id = aws_security_group.node_shared.id
   description       = "Allow all outbound IPv4 traffic"
-  
+
   ip_protocol = "-1"
   cidr_ipv4   = "0.0.0.0/0"
 
@@ -109,7 +111,7 @@ resource "aws_vpc_security_group_egress_rule" "node_egress_all" {
 
 #  security_group_id = aws_security_group.node_shared.id
 #  description       = "Allow SSH access to worker nodes"
-  
+
 #  ip_protocol = "tcp"
 #  from_port   = 22
 #  to_port     = 22

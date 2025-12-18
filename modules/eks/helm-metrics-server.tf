@@ -11,8 +11,7 @@ resource "helm_release" "metrics-server" {
     }
   ]
 
-    depends_on = [
-    aws_iam_role_policy_attachment.attach_ca_policy,
+  depends_on = [
     aws_eks_access_policy_association.terraform_admin,
     aws_eks_node_group.private_nodes
   ]

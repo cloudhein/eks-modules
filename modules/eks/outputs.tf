@@ -24,18 +24,6 @@ output "secret_store_service_account_namespace" {
   value       = kubernetes_service_account.secret_store_irsa.metadata[0].namespace
 }
 
-// outputs.tf
-
-output "stateful_node_group_labels" {
-  description = "The labels applied to the stateful node group"
-  value       = try(aws_eks_node_group.stateful_nodes[0].labels, {})
-}
-
-output "stateful_node_group_taints" {
-  description = "The taints applied to the stateful node group"
-  value       = try(aws_eks_node_group.stateful_nodes[0].taint, [])
-}
-
 
 ##################################################
 # EKS Cluster Authentication Outputs
@@ -48,4 +36,22 @@ output "cluster_endpoint" {
 output "cluster_ca_certificate" {
   description = "Base64 encoded certificate data required to communicate with the cluster"
   value       = aws_eks_cluster.eks.certificate_authority[0].data
+}
+
+##############################
+# Outputs for karpenter
+##############################
+output "karpenter_node_role_arn" {
+  description = "ARN of the Karpenter node IAM role"
+  value       = aws_iam_role.karpenter_node.arn
+}
+
+output "karpenter_node_instance_profile_name" {
+  description = "Name of the Karpenter node instance profile"
+  value       = aws_iam_instance_profile.karpenter_node.name
+}
+
+output "karpenter_controller_role_arn" {
+  description = "ARN of the Karpenter controller IAM role (for IRSA)"
+  value       = aws_iam_role.karpenter_controller.arn
 }
