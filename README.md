@@ -7,37 +7,42 @@ This repository provides a comprehensive suite of Terraform modules to provision
 ## 🚀 Key Features
 
 ### Core Infrastructure
-- **Modularized Terraform architecture** for maintainability and reusability
-- **Multi-AZ VPC** with public and private subnets for high availability
-- **EKS cluster** with managed node groups and advanced configurations
-- **Remote state management** with S3 backend and DynamoDB locking
+- **Modularized Terraform Architecture**: Designed for high maintainability, reusability, and clean separation of concerns.
+
+- **High Availability Networking**: Multi-AZ VPC architecture with strictly separated public and private subnets.
+
+- **Production-Ready EKS**: Fully managed EKS cluster with managed node groups and optimized configurations.
+
+- **Robust State Management**: Remote Terraform state management using S3 backend with native state file locking for team collaboration.
 
 ### Security & IAM
-- **IAM Roles for Service Accounts (IRSA)** with OpenID Connect (OIDC) provider
-- **AWS Secrets Manager integration** with fine-grained access control
-- **Least privilege IAM policies** for all service accounts
-- **Secure service account automation** with Kubernetes provider integration
+- **Flexible Cluster Authentication**: Configurable support for EKS Access Entries (API mode), legacy ConfigMap, or hybrid authentication (API_AND_CONFIG_MAP) for seamless access management.
+
+- **Fine-Grained Access Control**: Full implementation of IAM Roles for Service Accounts (IRSA) via OIDC provider.
+
+- **Secrets Management Integration**: AWS Secrets Manager integration for secure, rotated credential management.
+
+- **Least Privilege Security**: Strict IAM policies applied to all service accounts to minimize attack surface.
+
+- **Automated Authentication**: Secure service account automation leveraging the Terraform Kubernetes provider.
 
 ### Storage & Persistence
-- **EBS CSI driver** for dynamic persistent volume provisioning
-- **Stateful node groups** with dedicated taints and labels
-- **StorageClass configurations** for different workload requirements
+- **Stateful Workloads**: Integrated EBS CSI driver enabling dynamic persistent volume (PV) provisioning for databases and stateful apps.
+- **Stateful node groups**: with dedicated taints and labels
 
 ### Networking & Ingress
-- **AWS Load Balancer Controller** preconfigured with IRSA
-- **Application Load Balancer (ALB)** support for ingress
-- **Network Load Balancer (NLB)** capabilities
-- **VPC CNI**, CoreDNS, and kube-proxy optimizations
+- **Advanced Ingress**: AWS Load Balancer Controller pre-configured with IRSA for automated ALB provisioning.
 
-### Auto-scaling & Monitoring
-- **Cluster Autoscaler** for automatic eks nodes scale out and scale in support
-- **Node group scaling policies** with customizable parameters
-- **Comprehensive logging and monitoring** setup
+- **Application Load Balancer (ALB)**: Native support for Kubernetes Ingress resources backed by AWS ALB.
 
-### Secrets Management
-- **AWS Secrets Store CSI Driver** pre-installed and configured
-- **Kubernetes service accounts** with AWS Secrets Manager access
-- **Secure secrets injection** into pods without hardcoded credentials
+- **Network Optimization**: Tuned configurations for VPC CNI, CoreDNS, and kube-proxy for maximum throughput and reliability.
+
+### Node Auto-scaling
+- **Proven Auto-scaling:** Reliable node scaling using the industry-standard **Cluster Autoscaler** to dynamically adjust Auto Scaling Group sizes based on workload demand.
+
+### Secrets Injection
+- **CSI Driver Integration**: AWS Secrets Store CSI Driver pre-installed for seamless secret retrieval.
+
 
 ---
 
@@ -75,88 +80,40 @@ Creates a secure, scalable VPC foundation:
 - **Route tables** with proper associations and routing rules
 
 ### 🔹 EKS Module
-
 Comprehensive EKS cluster setup with enterprise features:
 
-#### Core Cluster Configuration
-- **EKS Control Plane** with public/private endpoint access
-- **OIDC Identity Provider** for service account federation
-- **Cluster encryption** for secrets at rest
-- **CloudWatch logging** for audit, API, authenticator, controllerManager, and scheduler
+#### Core Cluster & Access
+- **Modular Architecture**: Clean separation of resources (eks-cluster.tf, node-group.tf) for maintainability.
 
-#### Node Groups
-- **General-purpose node group** for stateless workloads
+- **Modern Authentication** using EKS Access Entries (access_entry.tf) for API-based access management.
+
+- **OIDC Identity Provider** enabled for IAM Roles for Service Accounts (IRSA).
+
+- **Security Groups** fine-tuned for Control Plane and Worker Node communication.
+
+#### Compute & Scaling
+- **Managed Node Groups** for stable, low-maintenance worker node management.
+
 - **Stateful node group** with dedicated taints and labels for persistent workloads
-- **Auto-scaling configuration** with min/max/desired capacity
-- **Spot instance support** for cost optimization (optional)
 
-#### Add-ons and Extensions
-- **VPC CNI** for advanced networking
-- **CoreDNS** for cluster DNS resolution
-- **kube-proxy** for service networking
-- **EBS CSI Driver** for persistent volume management
+- **Cluster Autoscaler** integration (helm-cluster-autoscaler.tf) for automated scaling of node groups based on workload demand.
 
-#### Security Integration
-- **AWS Secrets Manager** integration with IRSA
-- **Fine-grained IAM policies** for service accounts
-- **Pod Security Standards** enforcement
-- **Network policies** support
+- **Auto-scaling Policies** pre-configured IAM roles (cluster-autoscaler.tf) to allow nodes to scale.
+
+#### Storage & Secrets
+- **EBS CSI Driver integration** (ebs-csi-policy.tf) for stateful persistent volumes.
+
+- **Secrets Store CSI Driver** (secret-store-csi-*.tf) for securely syncing AWS Secrets Manager secrets into Kubernetes pods.
+
+#### Networking & Ingress
+- **Ingress Ready** with IAM policies and Service Accounts for the AWS Load Balancer Controller (ingress-*.tf).
+
+- **Standard Add-ons** including VPC CNI, CoreDNS, and kube-proxy managed via EKS Add-ons.
+
+#### Observability
+- **Metrics Server** (helm-metrics-server.tf) deployment included for Horizontal Pod Autoscaling (HPA) support.
 
 ---
-
-## 🔧 Advanced Features
-
-### 🔐 Secrets Management
-
-**AWS Secrets Store CSI Driver Integration:**
-```hcl
-# Automatic service account creation with IRSA
-resource "kubernetes_service_account" "secret_store_irsa" {
-  metadata {
-    name      = var.secret_store_service_account_name
-    namespace = var.secret_store_service_account_namespace
-    annotations = {
-      "eks.amazonaws.com/role-arn" = aws_iam_role.secrets_irsa_role.arn
-    }
-  }
-}
-```
-
-**Features:**
-- **Fine-grained access control** to specific secrets by ARN
-- **Automatic namespace creation** if needed
-- **Read-only permissions** with least privilege principle
-- **Service account automation** with proper OIDC federation
-
-### ⚡ Auto-scaling
-
-**Cluster Autoscaler with EKS node group auto-scaling support:**
-```hcl
-# Pre-installed and configured cluster autoscaler
-resource "helm_release" "cluster_autoscaler" {
-  name       = "cluster-autoscaler"
-  repository = "https://kubernetes.github.io/autoscaler"
-  chart      = "cluster-autoscaler"
-  namespace  = "kube-system"
-}
-```
-
-### 🗄️ Stateful Workloads Support
-
-**Dedicated Stateful Node Group:**
-- **Specialized taints and labels** for database workloads
-- **EBS-optimized instances** with enhanced networking
-- **Persistent volume support** with EBS CSI driver
-- **Anti-affinity rules** for high availability
-- **Custom storage classes** for different performance tiers
-
-### 🌐 Ingress and Load Balancing
-
-**AWS Load Balancer Controller:**
-- **Application Load Balancer (ALB)** support
-- **SSL/TLS termination** with ACM integration
-- **WAF integration** for security (optional)
-- **Target group binding** for advanced routing
 
 ---
 
@@ -203,159 +160,40 @@ helm list -A
 
 ## 📂 Directory Structure
 
-```
-├── backend/                          # Remote state configuration
-│   ├── backend-access-user.tf       # IAM user for backend access
-│   ├── main.tf                      # S3 bucket and DynamoDB table
-│   └── ...
+├── backend/                                   # Remote state configuration
+│   ├── backend-access-user.tf                 # IAM user for backend access
+│   ├── main.tf                                # S3 bucket creation
+│   ├── outputs.tf                             # Backend resource outputs
+│   ├── variables.tf                           # Backend variables
+│   └── versions.tf                            # Provider versions for backend
 ├── modules/
-│   ├── eks/                                    # EKS module
-│   │   ├── main.tf                             # EKS cluster and node groups
-│   │   ├── ebs-csi-policy.tf                  # EBS CSI driver IAM policies
-│   │   ├── eks_cluster_addons.tf              # EKS add-ons configuration
-│   │   ├── cluster-autoscaler.tf              # Cluster autoscaler IRSA setup
-│   │   ├── helm-cluster-autoscaler.tf         # Helm deployment for autoscaler
-│   │   ├── ingress-policy.tf                  # Load balancer controller policies
-│   │   ├── ingress-service-account.tf         # Service accounts for ingress
-│   │   ├── secret-store-csi-policy.tf         # Secrets Store CSI driver policies
-│   │   ├── secret-store-csi-service-accounts.tf # Service accounts for secrets
+│   ├── eks/                                   # EKS Module
+│   │   ├── access_entry.tf                    # EKS Access Entries (API Auth mode)
+│   │   ├── cluster-autoscaler.tf              # IAM roles for Cluster Autoscaler
+│   │   ├── ebs-csi-policy.tf                  # IAM policy for EBS CSI driver
+│   │   ├── eks-cluster-ng-iam-roles.tf        # IAM roles for Managed Node Groups
+│   │   ├── eks-cluster.tf                     # Main EKS cluster resource
+│   │   ├── eks_cluster_addons.tf              # Managed Add-ons (CoreDNS, VPC CNI,EBS CSI driver, etc.)
+│   │   ├── helm-cluster-autoscaler.tf         # Helm release for Cluster Autoscaler
+│   │   ├── helm-metrics-server.tf             # Helm release for Metrics Server
+│   │   ├── ingress-policy.tf                  # IAM policy for AWS Load Balancer Controller
+│   │   ├── ingress-service-account.tf         # Service Account for Ingress
+│   │   ├── node-group.tf                      # EKS Managed Node Groups configuration
+│   │   ├── secret-store-csi-policy.tf         # IAM policy for Secrets Store CSI
+│   │   ├── secret-store-csi-service-accounts.tf # Service Accounts for Secrets Store
+│   │   ├── security-group.tf                  # Security Groups (Control Plane & Worker)
 │   │   ├── outputs.tf                         # Module outputs
 │   │   └── variables.tf                       # Module variables
-│   └── vpc/                         # VPC module
-│       ├── main.tf                  # VPC, subnets, gateways
-│       ├── data.tf                  # Data sources (AZs, etc.)
-│       ├── outputs.tf               # VPC outputs
-│       └── variables.tf             # VPC variables
-├── main.tf                          # Root module configuration
-├── variables.tf                     # Root variables
-├── outputs.tf                       # Root outputs
-├── backend.tf                       # Backend configuration
-└── versions.tf                      # Provider versions
-```
-
----
-
-## 📤 Comprehensive Outputs
-
-### EKS Cluster Information
-- `eks_cluster_name`: EKS cluster identifier
-- `eks_cluster_endpoint`: Kubernetes API server endpoint
-
-### Node Groups
-- `eks_node_group_name`: General-purpose node group name
-- `stateful_node_group_labels`: Labels applied to stateful nodes
-- `stateful_node_group_taints`: Taints for stateful workload isolation
-
-### Service Accounts
-- `secret_store_service_account_name`: Secrets management service account
-- `secret_store_service_account_namespace`: Service account namespace
-
-### VPC Networking
-- vpc_id: The ID of the created Virtual Private Cloud (VPC).
-
-- vpc_cidr_block: The CIDR block range assigned to the VPC.
-
-- public_subnet_ids: A list of IDs for all public subnets created within the VPC.
-
-- private_subnet_ids: A list of IDs for all private subnets created within the VPC.
-
-- availability_zones: List of availability zones used for subnet distribution.
-
-- internet_gateway_id: The ID of the Internet Gateway attached to the VPC.
-
-- nat_gateway_id: The ID of the NAT Gateway used for outbound internet access from private subnets.
-
-- nat_eip: The Elastic IP address allocated to the NAT Gateway.
-
-- public_route_table_id: Route table ID associated with the public subnets.
-
-- private_route_table_id: Route table ID associated with the private subnets.
-
----
-
-## 🛡️ Security Best Practices
-
-### IAM and RBAC
-- **Least privilege IAM policies** for all service accounts
-- **OIDC federation** instead of long-lived credentials
-- **Pod Security Standards** enforcement
-- **RBAC policies** for fine-grained access control
-
-### Network Security
-- **Private node groups** with no direct internet access
-- **Security groups** with minimal required ports
-- **VPC Flow Logs** for network monitoring
-
-### Secrets Management
-- **AWS Secrets Manager** integration
-- **Secrets Store CSI driver** for secure injection
-- **No hardcoded secrets** in configurations
-- **Automatic secret rotation** support
-
----
-
-## 🔄 Post-Deployment Configuration
-
-### Installing Additional Add-ons
-
-**AWS Load Balancer Controller:**
-```bash
-helm repo add eks https://aws.github.io/eks-charts
-helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
-  -n kube-system \
-  --set clusterName=my-eks-cluster \
-  --set serviceAccount.create=false \
-  --set serviceAccount.name=aws-load-balancer-controller
-```
-
-**Metrics Server:**
-```bash
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
-```
-
-## 🔧 Troubleshooting
-
-### Common Issues
-
-**Node Group Creation Fails:**
-```bash
-# Check IAM permissions
-aws sts get-caller-identity
-aws iam get-role --role-name EKS-NodeGroup-Role
-```
-
-**IRSA Not Working:**
-```bash
-# Verify OIDC provider
-kubectl get configmap aws-auth -n kube-system -o yaml
-aws iam list-open-id-connect-providers
-```
-
-**Auto-scaling Issues:**
-```bash
-# Check cluster autoscaler logs
-kubectl logs -n kube-system deployment/cluster-autoscaler
-kubectl describe nodes
-```
-
-### Useful Commands
-
-```bash
-# Get cluster info
-kubectl cluster-info
-kubectl get nodes -o wide
-
-# Check add-ons
-kubectl get daemonsets -A
-kubectl get deployments -A
-
-# Monitor auto-scaling
-kubectl top nodes
-kubectl get hpa -A
-
-# Verify secrets integration
-kubectl get secretproviderclasses -A
-kubectl describe pod <pod-name>
+│   └── vpc/                                   # VPC Module
+│       ├── main.tf                            # VPC, subnets, IGW, NAT gateways
+│       ├── data.tf                            # Data sources (Availability Zones)
+│       ├── outputs.tf                         # VPC outputs
+│       └── variables.tf                       # VPC variables
+├── main.tf                                    # Root module configuration
+├── variables.tf                               # Root variables
+├── outputs.tf                                 # Root outputs
+├── backend.tf                                 # Backend configuration
+└── versions.tf                                # Provider versions
 ```
 
 ---
