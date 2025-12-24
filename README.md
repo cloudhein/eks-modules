@@ -43,13 +43,13 @@ This repository provides a comprehensive, production-ready Terraform configurati
 
 ## 🧱 Architecture Overview
 
-### Overview Architecure of EKS Infrastructure
+### Overview Network Architecture of EKS Infrastructure
 
 ![Infrasture Diagram](./images/network-architecture.png)
 
 ### LLD Architecure of EKS Infrastructure
 
-![Infrasture Diagram](./images/eks-architecture-diagram.png)
+![Infrasture Diagram](./images/eks-karpenter-architecture-diagram.png)
 
 ### EKS IRSA Permissions & Relationship
 
