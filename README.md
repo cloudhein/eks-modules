@@ -160,6 +160,7 @@ helm list -A
 
 ## 📂 Directory Structure
 
+```
 ├── backend/                                   # Remote state configuration
 │   ├── backend-access-user.tf                 # IAM user for backend access
 │   ├── main.tf                                # S3 bucket creation
