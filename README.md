@@ -13,7 +13,7 @@ This repository provides a comprehensive suite of Terraform modules to provision
 
 - **Production-Ready EKS**: Fully managed EKS cluster with managed node groups and optimized configurations.
 
-- **Robust State Management**: Remote Terraform state management using S3 backend with DynamoDB locking for team collaboration.
+- **Robust State Management**: Remote Terraform state management using S3 backend with native state file locking for team collaboration.
 
 ### Security & IAM
 - **Flexible Cluster Authentication**: Configurable support for EKS Access Entries (API mode), legacy ConfigMap, or hybrid authentication (API_AND_CONFIG_MAP) for seamless access management.
