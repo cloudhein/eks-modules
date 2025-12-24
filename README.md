@@ -1,6 +1,6 @@
 # EKS Infrastructure Provisioning with Terraform
 
-This repository provides a comprehensive, production-ready Terraform configuration for provisioning Amazon EKS (Elastic Kubernetes Service) infrastructure. The setup supports both stateless and stateful microservices with enterprise-grade features including secrets management, auto-scaling, ingress controllers, and persistent storage.
+This repository provides a comprehensive suite of Terraform modules to provision a complete Amazon EKS ecosystem. It is designed for production readiness, offering customized VPC networking, secure ingress and secrets management, and fine-grained access control. The architecture supports stateful microservices via the EBS CSI driver and implements robust, robust node scaling strategies using cluster autoscaler.
 
 ---
 
