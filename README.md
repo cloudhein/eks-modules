@@ -1,6 +1,6 @@
 # EKS Infrastructure Provisioning with Terraform
 
-This repository provides a comprehensive suite of Terraform modules to provision a complete Amazon EKS ecosystem. It is designed for production readiness, offering customized VPC networking, secure ingress and secrets management, and fine-grained access control. The architecture supports stateful microservices via the EBS CSI driver and implements robust, robust node scaling strategies using cluster autoscaler.
+This repository provides a comprehensive suite of Terraform modules to provision a complete Amazon EKS ecosystem. It is designed for production readiness, offering customized VPC networking, secure ingress and secrets management, and fine-grained access control. The architecture supports stateful microservices via the EBS CSI driver and implements robust node scaling strategies using cluster autoscaler.
 
 ---
 
@@ -48,11 +48,11 @@ This repository provides a comprehensive suite of Terraform modules to provision
 
 ## 🧱 Architecture Overview
 
-### Overview Architecure of EKS Infrastructure
+### Overview Network Architecture of EKS Infrastructure
 
 ![Infrasture Diagram](./images/network-architecture.png)
 
-### LLD Architecure of EKS Infrastructure
+### LLD Architecture of EKS Infrastructure
 
 ![Infrasture Diagram](./images/eks-architecture-diagram.png)
 
