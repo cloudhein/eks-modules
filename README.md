@@ -50,7 +50,7 @@ This repository provides a comprehensive suite of Terraform modules to provision
 
 ![Infrasture Diagram](./images/network-architecture.png)
 
-### LLD Architecure of EKS Infrastructure
+### LLD Architecture of EKS Infrastructure
 
 ![Infrasture Diagram](./images/eks-karpenter-architecture-diagram.png)
 
