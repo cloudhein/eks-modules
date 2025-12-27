@@ -177,10 +177,11 @@ resource "aws_eks_node_group" "private_nodes" {
     max_unavailable_percentage = 33
   }
 
-  # Use launch template
   launch_template {
     id      = aws_launch_template.private_nodes.id
-    version = "$Latest"
+    # ✅ FIX: Use the attribute reference. 
+    # This resolves to the actual number (e.g. "5") so it matches the AWS state.
+    version = aws_launch_template.private_nodes.latest_version
   }
 
   tags = merge(
@@ -228,10 +229,11 @@ resource "aws_eks_node_group" "stateful_nodes" {
     max_unavailable = 1 # Update one node at a time for stateful workloads
   }
 
-  # Use launch template
   launch_template {
     id      = aws_launch_template.stateful_nodes[0].id
-    version = "$Latest"
+    # ✅ FIX: Use the attribute reference. 
+    # This resolves to the actual number (e.g. "5") so it matches the AWS state.
+    version = aws_launch_template.stateful_nodes[0].latest_version
   }
 
   # Label & taint these nodes so only your stateful workloads land here
