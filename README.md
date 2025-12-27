@@ -168,6 +168,7 @@ helm list -A
 ├── modules/
 │   ├── eks/                                   # EKS Module
 │   │   ├── access_entry.tf                    # EKS Access Entries (API Auth mode)
+│   │   ├── alb-ingress-controller.tf          # ALB Ingress Controller 
 │   │   ├── data_karpenter.tf                  # Data sources for Karpenter (CRDs)
 │   │   ├── ebs-csi-policy.tf                  # IAM policy for EBS CSI driver
 │   │   ├── eks-cluster.tf                     # Main EKS cluster resource
@@ -181,6 +182,7 @@ helm list -A
 │   │   ├── karpenter-iam-roles.tf             # IAM roles for Karpenter Controller & Nodes
 │   │   ├── karpenter_main.tf                  # General Karpenter resources (Tagging/Namespace)
 │   │   ├── karpenter_node_pools.tf            # EC2NodeClass and NodePool configurations
+│   │   ├── karpenter_tags.tf                  # Add tags for Karpenter so it will know which SG to use
 │   │   ├── node-group.tf                      # EKS Managed Node Groups (Stable/System)
 │   │   ├── secret-store-csi-policy.tf         # IAM policy for Secrets Store CSI
 │   │   ├── secret-store-csi-service-accounts.tf # Service Accounts for Secrets Store
