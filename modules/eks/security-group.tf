@@ -10,7 +10,8 @@ resource "aws_security_group" "control_plane" {
     {
       Name                     = "${var.cluster_name}-control-plane-sg"
       Type                     = "control-plane"
-      "karpenter.sh/discovery" = var.cluster_name # for karpenter sg tagging 
+      # ❌ REMOVE THIS LINE BELOW
+      # "karpenter.sh/discovery" = var.cluster_name 
     }
   )
 }

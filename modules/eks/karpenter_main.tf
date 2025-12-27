@@ -4,18 +4,18 @@
 ##############################
 # Tag Subnets for Karpenter Discovery
 ##############################
-resource "aws_ec2_tag" "subnet_tags" {
-  count = length(var.private_subnet_ids)
-
-  resource_id = var.private_subnet_ids[count.index]
-  key         = "karpenter.sh/discovery"
-  value       = var.cluster_name
-
-  depends_on = [
-    aws_eks_node_group.private_nodes
-  ]
-}
-
+# ❌ STEP 1: Comment this out so EKS doesn't fight with the VPC module
+# resource "aws_ec2_tag" "subnet_tags" {
+#   count = length(var.private_subnet_ids)
+#
+#   resource_id = var.private_subnet_ids[count.index]
+#   key         = "karpenter.sh/discovery"
+#   value       = var.cluster_name
+#
+#   depends_on = [
+#     aws_eks_node_group.private_nodes
+#   ]
+# }
 
 ##############################
 # Karpenter CRDs

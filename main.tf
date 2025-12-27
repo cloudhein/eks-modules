@@ -5,6 +5,11 @@ module "vpc" {
   vpc_cidr_range       = var.vpc_cidr_range
   public_subnets_cidr  = var.public_subnets_cidr
   private_subnets_cidr = var.private_subnets_cidr
+
+  # Add this tag for karpenter to find the nodes in eks modules and we pass the Karpenter discovery tag here so the VPC module applies it natively.
+  private_subnet_tags = {
+    "karpenter.sh/discovery" = var.cluster_name
+  }
 }
 
 module "eks" {
@@ -33,6 +38,8 @@ module "eks" {
   node_volume_size = var.node_volume_size
 
   region = var.region
+
+  alb_controller_version = var.alb_controller_version
 
   ############### Karpenter input variables ###############
   use_access_entries = var.use_access_entries

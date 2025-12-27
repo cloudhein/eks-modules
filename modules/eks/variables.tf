@@ -285,3 +285,13 @@ variable "nodepool_tags" {
   type        = map(string)
   default     = {}
 }
+
+##########################################
+# ALB controller variables
+##########################################
+
+variable "alb_controller_version" {
+  description = "Version of the AWS Load Balancer Controller to install"
+  type        = string
+  default     = ""
+}

@@ -80,10 +80,14 @@ resource "aws_subnet" "private_subnet" {
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = false
 
-  tags = {
-    Name                                        = "${var.cluster_name}-private-subnet-${count.index +1}"
-    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
-  }
+   # ✅ CHANGE: Use merge() to combine default tags with the new variable
+  tags = merge(
+    {
+      Name                                        = "${var.cluster_name}-private-subnet-${count.index + 1}"
+      "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+    },
+    var.private_subnet_tags # <--- Injects the Karpenter tags passed from root
+  )
 }
 
 ##### create one nat gateway for all private subnets

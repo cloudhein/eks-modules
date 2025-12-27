@@ -38,6 +38,13 @@ variable "private_subnets_cidr" {
   default     = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
 }
 
+# ✅ ADD THIS: Allow passing extra tags (like Karpenter tags) into the module
+variable "private_subnet_tags" {
+  description = "Additional tags for the private subnets"
+  type        = map(string)
+  default     = {}
+}
+
 ####### EKS variables #########
 variable "kubernetes_version" {
   type        = string
@@ -343,4 +350,14 @@ variable "nodepool_tags" {
   description = "Additional tags for Karpenter-provisioned nodes"
   type        = map(string)
   default     = {}
+}
+
+##########################################
+# ALB controller variables
+##########################################
+
+variable "alb_controller_version" {
+  description = "Version of the AWS Load Balancer Controller to install"
+  type        = string
+  default     = "1.17.0"
 }
