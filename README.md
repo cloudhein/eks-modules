@@ -170,6 +170,7 @@ helm list -A
 ├── modules/
 │   ├── eks/                                   # EKS Module
 │   │   ├── access_entry.tf                    # EKS Access Entries (API Auth mode)
+│   │   ├── alb-ingress-controller.tf          # ALB Ingress Controller
 │   │   ├── cluster-autoscaler.tf              # IAM roles for Cluster Autoscaler
 │   │   ├── ebs-csi-policy.tf                  # IAM policy for EBS CSI driver
 │   │   ├── eks-cluster-ng-iam-roles.tf        # IAM roles for Managed Node Groups
