@@ -174,6 +174,7 @@ helm list -A
 │   │   ├── eks-cluster.tf                     # Main EKS cluster resource
 │   │   ├── eks-cluster-ng-iam-roles.tf        # IAM roles for Managed Node Groups
 │   │   ├── eks_cluster_addons.tf              # Managed Add-ons (CoreDNS, VPC CNI,EBS CSI driver, etc.)
+│   │   ├── eks-gp3-sc.tf                      # Set EBS GP3 as default storageclass
 │   │   ├── helm-karpenter.tf                  # Helm release for Karpenter controller
 │   │   ├── helm-metrics-server.tf             # Helm release for Metrics Server
 │   │   ├── ingress-policy.tf                  # IAM policy for AWS Load Balancer Controller
