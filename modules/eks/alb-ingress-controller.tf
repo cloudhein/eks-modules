@@ -35,7 +35,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   }
   ]
 
-  # 4. Wait for the Service Account to be ready
+  # 5. Wait for the Service Account to be ready  
   depends_on = [
     kubernetes_service_account.aws_load_balancer_controller
   ]
