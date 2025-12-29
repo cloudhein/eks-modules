@@ -176,3 +176,13 @@ variable "stateful_node_volume_size" {
   type        = number
   default     = 100
 }
+
+##########################################
+# ALB controller variables
+##########################################
+
+variable "alb_controller_version" {
+  description = "Version of the AWS Load Balancer Controller to install"
+  type        = string
+  default     = "1.17.0"
+}

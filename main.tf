@@ -40,4 +40,6 @@ module "eks" {
 
   node_volume_size          = var.node_volume_size
   stateful_node_volume_size = var.stateful_node_volume_size
+
+  alb_controller_version = var.alb_controller_version
 }

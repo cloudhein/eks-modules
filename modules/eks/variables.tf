@@ -163,3 +163,13 @@ variable "vpc_id" {
   description = "VPC ID where the EKS cluster and nodes will be deployed"
   type        = string
 }
+
+##########################################
+# ALB controller variables
+##########################################
+
+variable "alb_controller_version" {
+  description = "Version of the AWS Load Balancer Controller to install"
+  type        = string
+  default     = ""
+}
