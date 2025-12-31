@@ -118,7 +118,9 @@ variable "allowed_secret_patterns" {
   description = "List of secret name patterns to allow access"
   type        = list(string)
   default = [
-    "mongodb-credentials-*"
+    "mongo-credentials",
+    "redis-credentials",
+    "postgres-credentials"
   ]
 }
 
