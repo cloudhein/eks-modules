@@ -53,11 +53,17 @@ resource "helm_release" "karpenter" {
                     key      = "karpenter.sh/nodepool"
                     operator = "DoesNotExist"
                   },
-                  # Run on stable node group
+                  # ✅ FIX: Match 'role=system' (Matches your Kapenter System Node Group)
                   {
-                    key      = "node-type"
+                    key      = "role"
                     operator = "In"
-                    values   = ["stable"]
+                    values   = ["system"]
+                  },
+                  # ✅ FIX: Match 'type=karpenter' (Matches your Kapenter System Node Group)
+                  {
+                    key      = "type"
+                    operator = "In"
+                    values   = ["karpenter"]
                   }
                 ]
               }
@@ -78,6 +84,15 @@ resource "helm_release" "karpenter" {
           ]
         }
       }
+
+    # ✅ CRITICAL: Tolerate the taint so Karpenter runs on the Karpenter System Node Group
+      tolerations = [
+        {
+          key      = "CriticalAddonsOnly"
+          operator = "Exists"
+          effect   = "NoSchedule"
+        }
+      ]
 
       # Additional settings
       replicas = var.karpenter_replicas

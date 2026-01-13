@@ -295,3 +295,27 @@ variable "alb_controller_version" {
   type        = string
   default     = ""
 }
+
+##########################################
+# Karpenter Node Group
+##########################################
+
+variable "karpenter_system_instance_types" {
+  description = "Instance types for Karpenter system node group"
+  type        = list(string)
+}
+
+variable "karpenter_system_node_desired_size" {
+  description = "Desired size of Karpenter system node group"
+  type        = number
+}
+
+variable "karpenter_system_node_min_size" {
+  description = "Minimum size of Karpenter system node group"
+  type        = number
+}
+
+variable "karpenter_system_node_max_size" {
+  description = "Maximum size of Karpenter system node group"
+  type        = number
+}

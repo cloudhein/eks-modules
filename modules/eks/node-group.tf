@@ -39,7 +39,6 @@ resource "aws_launch_template" "private_nodes" {
     tags = merge(
       var.common_tags,
       {
-        Name                                            = "${var.cluster_name}-private-node"
         "k8s.io/cluster-autoscaler/${var.cluster_name}" = "owned"
         "k8s.io/cluster-autoscaler/enabled"             = "true"
         "kubernetes.io/cluster/${var.cluster_name}"     = "owned"
@@ -117,6 +116,7 @@ resource "aws_eks_node_group" "private_nodes" {
   tags = merge(
     var.common_tags,
     {
+      "Name"                                          = "${var.cluster_name}-private-node"
       "k8s.io/cluster-autoscaler/${var.cluster_name}" = "owned"
       #"k8s.io/cluster-autoscaler/enabled"             = "true"
       "kubernetes.io/cluster/${var.cluster_name}"     = "owned"

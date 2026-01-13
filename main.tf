@@ -65,4 +65,11 @@ module "eks" {
   user_data               = var.user_data
   block_device_mappings   = var.block_device_mappings
   nodepool_tags           = var.nodepool_tags
+
+  ############### Karpenter node group input variable ###############
+
+  karpenter_system_instance_types    = var.karpenter_system_instance_types
+  karpenter_system_node_desired_size = var.karpenter_system_node_desired_size
+  karpenter_system_node_min_size     = var.karpenter_system_node_min_size
+  karpenter_system_node_max_size     = var.karpenter_system_node_max_size
 }

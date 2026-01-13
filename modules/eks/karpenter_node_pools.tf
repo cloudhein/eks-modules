@@ -16,6 +16,12 @@ resource "kubectl_manifest" "ec2nodeclass_default" {
     spec = {
       role = aws_iam_role.karpenter_node.name
 
+      # ✅ MOVED HERE: Configure Kubelet settings for AWS Nodes
+      # This ensures Karpenter generates UserData with maxPods: 110
+      kubelet = {
+        maxPods = 110
+      }
+
       amiSelectorTerms = [
         {
           alias = var.ami_family
@@ -62,7 +68,6 @@ resource "kubectl_manifest" "ec2nodeclass_default" {
   depends_on = [
     aws_eks_node_group.private_nodes,
     helm_release.karpenter,
-    kubectl_manifest.ec2nodeclass_default,
     kubectl_manifest.karpenter_nodepool_crd,
     kubectl_manifest.karpenter_ec2nodeclass_crd
   ]
@@ -83,6 +88,9 @@ resource "kubectl_manifest" "nodepool_default" {
     spec = {
       template = {
         spec = {
+          # ❌ REMOVED: kubelet config is no longer here in v1 
+          # Objects for setting Kubelet features have been moved from the NodePool spec to the EC2NodeClasses spec
+
           requirements = var.nodepool_requirements
 
           nodeClassRef = {
