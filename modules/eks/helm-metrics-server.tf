@@ -28,7 +28,6 @@ resource "helm_release" "metrics_server" {
 
   depends_on = [
     aws_eks_access_policy_association.terraform_admin,
-    aws_eks_node_group.private_nodes,
-    aws_eks_node_group.karpenter_system_nodes
+    aws_eks_node_group.private_nodes
   ]
 }
