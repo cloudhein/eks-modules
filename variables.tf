@@ -391,3 +391,13 @@ variable "karpenter_system_node_max_size" {
   type        = number
   default     = 2
 }
+
+#######################################################
+# descheduler variable
+#######################################################
+
+#variable "descheduler_version" {
+#  description = "Version of the descheduler to install"
+#  type        = string
+#  default     = "0.34.0"
+#}

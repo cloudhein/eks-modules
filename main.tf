@@ -72,4 +72,7 @@ module "eks" {
   karpenter_system_node_desired_size = var.karpenter_system_node_desired_size
   karpenter_system_node_min_size     = var.karpenter_system_node_min_size
   karpenter_system_node_max_size     = var.karpenter_system_node_max_size
+
+  ############### Descheduler input variable ###############
+  # descheduler_version = var.descheduler_version
 }

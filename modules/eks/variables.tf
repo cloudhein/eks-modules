@@ -319,3 +319,23 @@ variable "karpenter_system_node_max_size" {
   description = "Maximum size of Karpenter system node group"
   type        = number
 }
+
+#######################################################
+# descheduler variable
+#######################################################
+
+variable "descheduler_version" {
+  description = "Version of the descheduler to install"
+  type        = string
+  default     = "0.34.0"
+}
+
+#######################################################
+# metrics server variable
+#######################################################
+
+variable "metrics_server_version" {
+  description = "Version of the metrics server to install"
+  type        = string
+  default     = "3.13.0"
+}
