@@ -52,7 +52,7 @@ This repository provides a comprehensive suite of Terraform modules to provision
 
 ### LLD Architecture of EKS Infrastructure
 
-![Infrasture Diagram](./images/eks-karpenter-architecture-diagram.png)
+![Infrasture Diagram](./images/eks-karpenter-ll-architecture-diagram.png)
 
 ### EKS IRSA Permissions & Relationship
 
